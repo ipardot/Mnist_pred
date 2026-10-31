@@ -2,7 +2,7 @@ import streamlit as st
 import numpy as np
 import tensorflow as tf
 from tensorflow import keras
-from PIL import Image
+from PIL import Image, ImageColor
 from streamlit_drawable_canvas import st_canvas
 import os
 
@@ -75,6 +75,44 @@ def load_mnist_model():
 # Cargar modelo
 model = load_mnist_model()
 
+def preparar_imagen(image_data, bg_color):
+    """Convierte el dibujo al formato MNIST: dígito blanco sobre fondo negro,
+    recortado, centrado y escalado a 28x28 sin deformarlo.
+    Devuelve None si el tablero está vacío."""
+    rgba = image_data.astype("float32")
+    fondo = np.array(ImageColor.getrgb(bg_color)[:3], dtype="float32")
+
+    # Qué tanto se diferencia cada píxel del color de fondo (0 = fondo)
+    diferencia = np.abs(rgba[:, :, :3] - fondo).max(axis=2)
+    trazo = diferencia * (rgba[:, :, 3] / 255.0)  # píxeles transparentes = fondo
+
+    filas, columnas = np.where(trazo > 30)
+    if len(filas) == 0:
+        return None
+
+    # Recortar el dígito y normalizar el contraste
+    recorte = trazo[filas.min():filas.max() + 1, columnas.min():columnas.max() + 1]
+    recorte = recorte / recorte.max() * 255
+
+    # Escalar el lado más largo a 20 px (como MNIST), manteniendo la proporción
+    alto, ancho = recorte.shape
+    escala = 20 / max(alto, ancho)
+    nuevo_ancho = max(1, round(ancho * escala))
+    nuevo_alto = max(1, round(alto * escala))
+    digito = Image.fromarray(recorte.astype("uint8")).resize(
+        (nuevo_ancho, nuevo_alto), Image.Resampling.LANCZOS
+    )
+
+    # Volver a llevar el trazo al máximo brillo (los trazos delgados quedan tenues al reducir)
+    arreglo = np.array(digito, dtype="float32")
+    arreglo = np.clip(arreglo / arreglo.max() * 255, 0, 255)
+    digito = Image.fromarray(arreglo.astype("uint8"))
+
+    # Centrar en un lienzo negro de 28x28
+    imagen = Image.new("L", (28, 28), 0)
+    imagen.paste(digito, ((28 - nuevo_ancho) // 2, (28 - nuevo_alto) // 2))
+    return imagen
+
 # Interfaz
 st.write("### 🎨 Dibuja un dígito del 0 al 9")
 
@@ -109,16 +147,12 @@ with col2:
 # Predicción
 if predict_btn:
     if canvas_result.image_data is not None:
-        if np.max(canvas_result.image_data) == 0:
+        # Procesar imagen (funciona con cualquier color y tamaño de tablero)
+        image_resized = preparar_imagen(canvas_result.image_data, bg_color)
+        if image_resized is None:
             st.warning("⚠️ Por favor, dibuja un dígito primero")
         else:
             with st.spinner("🤔 Analizando..."):
-                # Procesar imagen
-                image = Image.fromarray(
-                    canvas_result.image_data.astype("uint8")
-                ).convert("L")
-                
-                image_resized = image.resize((28, 28), Image.Resampling.LANCZOS)
                 img_array = np.array(image_resized) / 255.0
                 img_array = img_array.reshape(1, 28, 28, 1)
                 
