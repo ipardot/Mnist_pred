@@ -154,6 +154,13 @@ section[data-testid="stSidebar"]{
   border-right:4px solid var(--amarillo);
 }
 section[data-testid="stSidebar"] h3{ font-size:1.15rem !important; }
+/* Botones y avisos: conservan los colores originales de Streamlit (contraste) */
+button [data-testid="stMarkdownContainer"],
+button [data-testid="stMarkdownContainer"] *,
+[data-testid="stAlert"] [data-testid="stMarkdownContainer"] *{
+  color:inherit !important;
+  font-family:inherit !important;
+}
 </style>
 """, unsafe_allow_html=True)
 
