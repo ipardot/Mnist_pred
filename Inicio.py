@@ -7,8 +7,8 @@ from streamlit_drawable_canvas import st_canvas
 import os
 
 st.set_page_config(
-    page_title="Detector de Dígitos MNIST",
-    page_icon="✍️",
+    page_title="Aprendo los Números",
+    page_icon="✏️",
     layout="wide"
 )
 
@@ -17,30 +17,152 @@ with st.sidebar:
     st.write(f"**TensorFlow:** {tf.__version__}")
     st.write(f"**Keras:** {keras.__version__}")
 
-    st.subheader("Propiedades del Tablero")
+    st.subheader("🎨 Mi pizarra")
 
     # Canvas dimensions (moved to the top)
-    st.subheader("Dimensiones del Tablero")
-    canvas_width = st.slider("Ancho del tablero", 300, 700, 500, 50)
-    canvas_height = st.slider("Alto del tablero", 200, 600, 300, 50)
+    st.subheader("📏 Tamaño de la pizarra")
+    canvas_width = st.slider("Ancho de la pizarra", 300, 700, 500, 50)
+    canvas_height = st.slider("Alto de la pizarra", 200, 600, 300, 50)
 
     # Drawing mode selector
     drawing_mode = st.selectbox(
-        "Herramienta de Dibujo:",
+        "✏️ ¿Con qué quieres escribir?",
         ("freedraw", "line", "rect", "circle", "transform", "polygon", "point"),
     )
 
     # Stroke width slider
-    stroke_width = st.slider('Selecciona el ancho de línea', 1, 30, 15)
+    stroke_width = st.slider('Grosor del lápiz', 1, 30, 15)
 
     # Stroke color picker
-    stroke_color = st.color_picker("Color de trazo", "#FFFFFF")
+    stroke_color = st.color_picker("Color del lápiz", "#FFFFFF")
 
     # Background color
-    bg_color = st.color_picker("Color de fondo", "#000000")
+    bg_color = st.color_picker("Color de la pizarra", "#000000")
 
-st.title("✍️ Detección de Dígitos Escritos a Mano")
-st.markdown("**Modelo CNN entrenado en Google Colab con MNIST**")
+# ------------------------------------------------------------------
+# TEMA "APRENDO LOS NÚMEROS" (solo estilos CSS; la lógica y los inputs no cambian)
+# ------------------------------------------------------------------
+st.markdown("""
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;800&family=Nunito:wght@400;600;700&display=swap');
+
+:root{
+  --papel:#fbf7ee;
+  --renglon:#e4ecf5;
+  --azul:#3b82c4;
+  --azul-oscuro:#24598c;
+  --amarillo:#ffc93c;
+  --coral:#ff6b6b;
+  --verde:#4caf7a;
+  --morado:#8e6cc9;
+  --tinta:#2d3142;
+}
+
+/* Fondo: hoja de cuaderno con renglones suaves */
+.stApp{
+  background:
+    repeating-linear-gradient(to bottom, transparent 0 31px, var(--renglon) 31px 32px),
+    var(--papel);
+  background-attachment: fixed;
+}
+header[data-testid="stHeader"]{ background: transparent; }
+
+/* Panel central: hoja blanca con borde de colores */
+[data-testid="stMainBlockContainer"], .block-container{
+  background:
+    linear-gradient(90deg, var(--coral) 0 25%, var(--amarillo) 25% 50%, var(--verde) 50% 75%, var(--azul) 75% 100%) top / 100% 10px no-repeat,
+    #ffffff;
+  border-radius:24px;
+  box-shadow:0 18px 40px rgba(45,49,66,.10);
+  margin-top:2rem;
+  margin-bottom:4rem;
+  padding:2rem 2.4rem 2.4rem !important;
+  max-width:1100px;
+}
+@media (max-width:640px){
+  [data-testid="stMainBlockContainer"], .block-container{
+    padding:1.4rem 1.1rem 1.8rem !important;
+  }
+}
+
+/* Encabezado */
+.ninos-tag{
+  display:inline-block;
+  font-family:'Nunito', sans-serif;
+  font-weight:700; font-size:.8rem; letter-spacing:.12em; text-transform:uppercase;
+  color:var(--azul-oscuro);
+  background:#e3eefa;
+  padding:.3rem .8rem; border-radius:999px;
+}
+.ninos-title{
+  font-family:'Baloo 2', sans-serif;
+  font-weight:800; font-size:2.8rem; line-height:1.05;
+  color:var(--tinta);
+  margin:.7rem 0 .5rem;
+}
+.ninos-title span{ color:var(--coral); }
+.ninos-sub{
+  font-family:'Nunito', sans-serif;
+  font-size:1.1rem; line-height:1.55;
+  color:#5c6070;
+  max-width:640px;
+}
+.ninos-numeros{ display:flex; flex-wrap:wrap; gap:.45rem; margin:1.1rem 0 .4rem; }
+.ninos-numeros span{
+  display:inline-flex; align-items:center; justify-content:center;
+  width:2.3rem; height:2.3rem; border-radius:12px;
+  font-family:'Baloo 2', sans-serif; font-weight:800; font-size:1.3rem; color:#fff;
+}
+.ninos-numeros span:nth-child(5n+1){ background:var(--coral); }
+.ninos-numeros span:nth-child(5n+2){ background:var(--amarillo); color:var(--tinta); }
+.ninos-numeros span:nth-child(5n+3){ background:var(--verde); }
+.ninos-numeros span:nth-child(5n+4){ background:var(--azul); }
+.ninos-numeros span:nth-child(5n+5){ background:var(--morado); }
+@media (max-width:640px){
+  .ninos-title{ font-size:2.1rem; }
+}
+
+/* Títulos y textos del contenido */
+h2, h3{
+  font-family:'Baloo 2', sans-serif !important;
+  font-weight:800 !important;
+  color:var(--azul-oscuro) !important;
+}
+h1 a, h2 a, h3 a{ display:none !important; }
+[data-testid="stMarkdownContainer"] p,
+[data-testid="stMarkdownContainer"] li{
+  font-family:'Nunito', sans-serif;
+  color:var(--tinta);
+}
+
+/* Resultados: números grandes y amigables */
+[data-testid="stMetric"]{
+  background:var(--papel);
+  border-radius:18px;
+  padding:.9rem 1rem;
+}
+[data-testid="stMetricLabel"] p{ font-weight:700; color:#5c6070; }
+[data-testid="stMetricValue"]{
+  font-family:'Baloo 2', sans-serif;
+  font-weight:800;
+  color:var(--coral);
+}
+
+/* Barra lateral: amarillo suave */
+section[data-testid="stSidebar"]{
+  background:#fff6dc;
+  border-right:4px solid var(--amarillo);
+}
+section[data-testid="stSidebar"] h3{ font-size:1.15rem !important; }
+</style>
+""", unsafe_allow_html=True)
+
+st.markdown("""
+<span class="ninos-tag">✏️ Aprendo jugando</span>
+<div class="ninos-title">¡Escribe tus <span>números</span>!</div>
+<div class="ninos-sub">Escribe un número del 0 al 9 en la pizarra y pulsa <b>Revisar</b>. El profe robot te dirá qué número ve: si es el que querías escribir, ¡lo hiciste muy bien!</div>
+<div class="ninos-numeros"><span>0</span><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span></div>
+""", unsafe_allow_html=True)
 
 # Cargar modelo
 @st.cache_resource
@@ -53,9 +175,9 @@ def load_mnist_model():
     for model_path in model_files:
         if os.path.exists(model_path):
             try:
-                st.info(f"📂 Intentando cargar: {model_path}")
+                st.info(f"📂 Despertando al profe robot ({model_path})...")
                 model = keras.models.load_model(model_path)
-                st.success(f"✅ Modelo cargado exitosamente desde: `{model_path}`")
+                st.success("🤖 ¡El profe robot está listo para revisar tus números!")
                 return model
             except Exception as e:
                 st.error(f"❌ Error al cargar {model_path}: {str(e)}")
@@ -114,7 +236,7 @@ def preparar_imagen(image_data, bg_color):
     return imagen
 
 # Interfaz
-st.write("### 🎨 Dibuja un dígito del 0 al 9")
+st.write("### ✏️ Escribe un número del 0 al 9")
 
 col1, col2 = st.columns([2, 1])
 
@@ -136,9 +258,9 @@ with col1:
     )
 
 with col2:
-    st.write("### 🎮 Controles")
-    predict_btn = st.button("🔍 **Predecir**", type="primary", use_container_width=True)
-    clear_btn = st.button("🗑️ Limpiar", use_container_width=True)
+    st.write("### 👇 ¿Terminaste?")
+    predict_btn = st.button("✅ **¡Revisar mi número!**", type="primary", use_container_width=True)
+    clear_btn = st.button("🧽 Borrar y volver a intentar", use_container_width=True)
     
     if clear_btn:
         st.session_state.canvas_id += 1
@@ -150,9 +272,9 @@ if predict_btn:
         # Procesar imagen (funciona con cualquier color y tamaño de tablero)
         image_resized = preparar_imagen(canvas_result.image_data, bg_color)
         if image_resized is None:
-            st.warning("⚠️ Por favor, dibuja un dígito primero")
+            st.warning("✏️ ¡Primero escribe un número en la pizarra!")
         else:
-            with st.spinner("🤔 Analizando..."):
+            with st.spinner("🤔 El profe robot está mirando tu número..."):
                 img_array = np.array(image_resized) / 255.0
                 img_array = img_array.reshape(1, 28, 28, 1)
                 
@@ -162,31 +284,31 @@ if predict_btn:
                 confidence = np.max(prediction) * 100
             
             # Resultados
-            st.success(f"## 🎯 Dígito detectado: **{digit}**")
+            st.success(f"## 🌟 ¡Veo el número **{digit}**!\n\n¿Era el que querías escribir? ¡Muy bien hecho! Si no, bórralo e inténtalo otra vez.")
             
             col_m1, col_m2, col_m3 = st.columns(3)
             with col_m1:
-                st.metric("Predicción", digit)
+                st.metric("Escribiste el", digit)
             with col_m2:
-                st.metric("Confianza", f"{confidence:.1f}%")
+                st.metric("Qué tan claro se ve", f"{confidence:.1f}%")
             with col_m3:
                 alternative = np.argsort(prediction[0])[-2]
-                st.metric("2ª opción", alternative)
+                st.metric("También se parece al", alternative)
             
             # Mostrar imágenes
-            st.write("### 🖼️ Procesamiento")
+            st.write("### 🔍 Así lo vio el profe robot")
             col_img1, col_img2 = st.columns(2)
             
             with col_img1:
-                st.write("**Tu dibujo original:**")
+                st.write("**Tu número:**")
                 st.image(canvas_result.image_data, width=200)
             
             with col_img2:
-                st.write("**Imagen procesada (28x28):**")
+                st.write("**Como lo ve el robot (28x28):**")
                 st.image(image_resized, width=200)
             
             # Gráfico de probabilidades
-            st.write("### 📊 Probabilidades por dígito")
+            st.write("### 📊 ¿A qué número se parece más?")
             import pandas as pd
             prob_df = pd.DataFrame({
                 'Dígito': [str(i) for i in range(10)],
@@ -194,10 +316,10 @@ if predict_btn:
             })
             st.bar_chart(prob_df.set_index('Dígito'))
             
-            with st.expander("🔍 Ver detalles"):
+            with st.expander("🔍 Ver todos los números"):
                 for i, prob in enumerate(prediction[0]):
                     emoji = "🎯" if i == digit else ""
-                    st.write(f"{emoji} **Dígito {i}**: {prob*100:.2f}%")
+                    st.write(f"{emoji} **Número {i}**: {prob*100:.2f}%")
     else:
-        st.warning("⚠️ Por favor, dibuja un dígito en el canvas")
+        st.warning("✏️ ¡Primero escribe un número en la pizarra!")
 
