@@ -17,6 +17,28 @@ with st.sidebar:
     st.write(f"**TensorFlow:** {tf.__version__}")
     st.write(f"**Keras:** {keras.__version__}")
 
+    st.subheader("Propiedades del Tablero")
+
+    # Canvas dimensions (moved to the top)
+    st.subheader("Dimensiones del Tablero")
+    canvas_width = st.slider("Ancho del tablero", 300, 700, 500, 50)
+    canvas_height = st.slider("Alto del tablero", 200, 600, 300, 50)
+
+    # Drawing mode selector
+    drawing_mode = st.selectbox(
+        "Herramienta de Dibujo:",
+        ("freedraw", "line", "rect", "circle", "transform", "polygon", "point"),
+    )
+
+    # Stroke width slider
+    stroke_width = st.slider('Selecciona el ancho de línea', 1, 30, 15)
+
+    # Stroke color picker
+    stroke_color = st.color_picker("Color de trazo", "#FFFFFF")
+
+    # Background color
+    bg_color = st.color_picker("Color de fondo", "#000000")
+
 st.title("✍️ Detección de Dígitos Escritos a Mano")
 st.markdown("**Modelo CNN entrenado en Google Colab con MNIST**")
 
@@ -59,15 +81,16 @@ st.write("### 🎨 Dibuja un dígito del 0 al 9")
 col1, col2 = st.columns([2, 1])
 
 with col1:
+    # Create a canvas component with dynamic key
     canvas_result = st_canvas(
-        fill_color="black",
-        stroke_width=20,
-        stroke_color="white",
-        background_color="black",
-        width=400,
-        height=400,
-        drawing_mode="freedraw",
-        key="canvas",
+        fill_color="rgba(255, 165, 0, 0.3)",
+        stroke_width=stroke_width,
+        stroke_color=stroke_color,
+        background_color=bg_color,
+        height=canvas_height,
+        width=canvas_width,
+        drawing_mode=drawing_mode,
+        key=f"canvas_{canvas_width}_{canvas_height}",  # Dynamic key based on dimensions
     )
 
 with col2:
