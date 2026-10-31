@@ -80,6 +80,10 @@ st.write("### 🎨 Dibuja un dígito del 0 al 9")
 
 col1, col2 = st.columns([2, 1])
 
+# Contador para reiniciar el tablero al pulsar "Limpiar"
+if "canvas_id" not in st.session_state:
+    st.session_state.canvas_id = 0
+
 with col1:
     # Create a canvas component with dynamic key
     canvas_result = st_canvas(
@@ -90,7 +94,7 @@ with col1:
         height=canvas_height,
         width=canvas_width,
         drawing_mode=drawing_mode,
-        key=f"canvas_{canvas_width}_{canvas_height}",  # Dynamic key based on dimensions
+        key=f"canvas_{canvas_width}_{canvas_height}_{st.session_state.canvas_id}",  # Dynamic key based on dimensions
     )
 
 with col2:
@@ -99,6 +103,7 @@ with col2:
     clear_btn = st.button("🗑️ Limpiar", use_container_width=True)
     
     if clear_btn:
+        st.session_state.canvas_id += 1
         st.rerun()
 
 # Predicción
