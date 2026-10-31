@@ -111,13 +111,13 @@ header[data-testid="stHeader"]{ background: transparent; }
 .ninos-numeros span{
   display:inline-flex; align-items:center; justify-content:center;
   width:2.3rem; height:2.3rem; border-radius:12px;
-  font-family:'Baloo 2', sans-serif; font-weight:800; font-size:1.3rem; color:#fff;
+  font-family:'Baloo 2', sans-serif; font-weight:800; font-size:1.3rem; color:#1a1a1a;
 }
-.ninos-numeros span:nth-child(5n+1){ background:var(--coral); }
-.ninos-numeros span:nth-child(5n+2){ background:var(--amarillo); color:var(--tinta); }
-.ninos-numeros span:nth-child(5n+3){ background:var(--verde); }
-.ninos-numeros span:nth-child(5n+4){ background:var(--azul); }
-.ninos-numeros span:nth-child(5n+5){ background:var(--morado); }
+.ninos-numeros span:nth-child(5n+1){ background:#ffc2c2; }
+.ninos-numeros span:nth-child(5n+2){ background:#ffe08a; }
+.ninos-numeros span:nth-child(5n+3){ background:#b5e3c6; }
+.ninos-numeros span:nth-child(5n+4){ background:#b9d6f2; }
+.ninos-numeros span:nth-child(5n+5){ background:#d8c9f0; }
 @media (max-width:640px){
   .ninos-title{ font-size:2.1rem; }
 }
@@ -154,10 +154,26 @@ section[data-testid="stSidebar"]{
   border-right:4px solid var(--amarillo);
 }
 section[data-testid="stSidebar"] h3{ font-size:1.15rem !important; }
-/* Botones y avisos: conservan los colores originales de Streamlit (contraste) */
-button [data-testid="stMarkdownContainer"],
-button [data-testid="stMarkdownContainer"] *,
-[data-testid="stAlert"] [data-testid="stMarkdownContainer"] *{
+/* Textos sobre fondos claros: siempre en negro (también si Streamlit usa el tema oscuro) */
+.stApp [data-testid="stWidgetLabel"] p,
+.stApp [data-testid="stWidgetLabel"] label,
+.stApp [data-testid="stMarkdownContainer"] p,
+.stApp [data-testid="stMarkdownContainer"] li,
+.stApp [data-testid="stCaptionContainer"],
+.stApp [data-testid="caption"],
+.stApp [data-testid="stSliderThumbValue"],
+.stApp [data-testid="stSliderTickBarMin"],
+.stApp [data-testid="stSliderTickBarMax"],
+.stApp [data-testid="stFileUploaderFile"] *,
+.stApp [data-testid="stAlert"] [data-testid="stMarkdownContainer"] *{
+  color:#1a1a1a !important;
+}
+.stApp .vega-embed text{ fill:#1a1a1a !important; }
+
+/* Botones: conservan los colores originales de Streamlit (contraste) */
+.stApp button [data-testid="stMarkdownContainer"],
+.stApp button [data-testid="stMarkdownContainer"] *,
+.stApp button [data-testid="stMarkdownContainer"] p{
   color:inherit !important;
   font-family:inherit !important;
 }
